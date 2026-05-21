@@ -1,3 +1,5 @@
-public class ChessResult {
+package domain.result;
+
+public class ChessResult extends Result {
 
 }

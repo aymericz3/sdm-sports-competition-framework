@@ -1,3 +1,5 @@
-public class CardEvent {
-    
+package domain.event;
+
+public class CardEvent extends MatchEvent {
+
 }

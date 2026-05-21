@@ -1,3 +1,5 @@
-public class KnockoutCompetition {
-    
+package domain.competition;
+
+public class KnockoutCompetition extends Competition {
+
 }

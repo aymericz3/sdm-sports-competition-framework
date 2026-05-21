@@ -1,3 +1,5 @@
-public class SwissCompetition {
-    
+package domain.competition;
+
+public class SwissCompetition extends Competition {
+
 }

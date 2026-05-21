@@ -1,3 +1,5 @@
-public class FootballMatch {
-    
+package domain.match;
+
+public class FootballMatch extends Match {
+
 }

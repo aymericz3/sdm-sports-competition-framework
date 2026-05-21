@@ -1,3 +1,5 @@
-public class LeagueCompetition {
-    
+package domain.competition;
+
+public class LeagueCompetition extends Competition {
+
 }
