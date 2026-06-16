@@ -13,7 +13,6 @@ public class Contest {
     private final TerminationRule terminationRule;
     private final OutcomeRule outcomeRule;
     private final List<Object> eventLog;
-    private final List<Contest> children;
 
     private ContestState state;
     private Result result;
@@ -32,9 +31,12 @@ public class Contest {
         this.terminationRule = terminationRule;
         this.outcomeRule = outcomeRule;
         this.eventLog = new ArrayList<>();
-        this.children = new ArrayList<>();
         this.state = ContestState.SCHEDULED;
         this.terminationKind = TerminationKind.NOT_OVER;
+
+        for (Participation participation : this.participations) {
+            participation.attachTo(this);
+        }
     }
 
     public String getId()                       { return id; }
@@ -44,7 +46,6 @@ public class Contest {
     public TerminationKind getTerminationKind() { return terminationKind; }
     public int getElapsedMinutes()              { return elapsedMinutes; }
     public List<Object> getEventLog()           { return Collections.unmodifiableList(eventLog); }
-    public List<Contest> getChildren()          { return Collections.unmodifiableList(children); }
     public TerminationRule getTerminationRule() { return terminationRule; }
     public OutcomeRule getOutcomeRule()         { return outcomeRule; }
 
@@ -149,14 +150,6 @@ public class Contest {
         require(state == ContestState.ABANDONED, "Only ABANDONED contests can have their result accepted");
         state = ContestState.FINISHED;
         result = outcomeRule.buildResult(this);
-    }
-
-    public void addChild(Contest child) {
-        require(child != null, "Child contest cannot be null");
-        require(!isDecided() && state != ContestState.CANCELLED_VOID,
-                "Cannot add child to a decided or cancelled contest");
-
-        children.add(child);
     }
 
     public void checkTermination() {

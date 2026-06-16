@@ -14,7 +14,8 @@ public class ChessModule {
         "Chess",
         Arrays.asList("WHITE", "BLACK"),
         true,
-        false
+        TerminalCondition::new,
+        Declared::new
     );
 
     public static Competition swiss(String name, List<Participant> entrants) {
@@ -33,8 +34,8 @@ public class ChessModule {
                     new SonnebornBerger(scoring)
                 )
             ),
-            new TerminalCondition(),
-            new Declared()
+            SPORT.newTermination(),
+            SPORT.newOutcome()
         );
     }
 }

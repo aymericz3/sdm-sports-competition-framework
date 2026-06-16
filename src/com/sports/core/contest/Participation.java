@@ -7,6 +7,7 @@ public class Participation {
     private final String id;
     private final Participant participant;
     private final String role;
+    private Contest contest;            // set once, when this participation is added to a contest
     private ParticipationStatus status;
     private String outcomeValue;
 
@@ -19,9 +20,18 @@ public class Participation {
 
     public String getId()                  { return id; }
     public Participant getParticipant()    { return participant; }
+    public Contest getContest()            { return contest; }
     public String getRole()                { return role; }
     public ParticipationStatus getStatus() { return status; }
     public String getOutcomeValue()        { return outcomeValue; }
+
+    /** Called by {@link Contest} when this participation is added to it. A participation belongs to exactly one contest. */
+    void attachTo(Contest contest) {
+        if (this.contest != null) {
+            throw new IllegalStateException("Participation already belongs to a contest");
+        }
+        this.contest = contest;
+    }
 
     public void activate() {
         if (status != ParticipationStatus.ENTERED) {

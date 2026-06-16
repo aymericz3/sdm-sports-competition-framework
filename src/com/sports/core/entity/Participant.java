@@ -1,46 +1,33 @@
 package com.sports.core.entity;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
+/**
+ * Anything that competes: a single person or a team. The core always treats it
+ * as one opaque thing; {@code isTeam} is the only distinction it carries.
+ */
 public class Participant {
     private final String id;
     private final String name;
-    private final List<Member> roster; // null = individual; non-null = team
+    private final boolean team;
 
-    private Participant(String id, String name, List<Member> roster) {
+    private Participant(String id, String name, boolean team) {
         this.id = id;
         this.name = name;
-        this.roster = roster;
+        this.team = team;
     }
 
     public static Participant individual(String name) {
-        return new Participant(UUID.randomUUID().toString(), name, null);
+        return new Participant(UUID.randomUUID().toString(), name, false);
     }
 
     public static Participant team(String name) {
-        return new Participant(UUID.randomUUID().toString(), name, new ArrayList<>());
-    }
-
-    public static Participant withId(String id, String name, boolean isTeam) {
-        return new Participant(id, name, isTeam ? new ArrayList<>() : null);
+        return new Participant(UUID.randomUUID().toString(), name, true);
     }
 
     public String getId()   { return id; }
     public String getName() { return name; }
-    public boolean isTeam() { return roster != null; }
-
-    public List<Member> getRoster() {
-        if (roster == null) return Collections.emptyList();
-        return Collections.unmodifiableList(roster);
-    }
-
-    public void addMember(Member member) {
-        if (roster == null) throw new IllegalStateException("Individual participant has no roster");
-        roster.add(member);
-    }
+    public boolean isTeam() { return team; }
 
     @Override
     public boolean equals(Object o) {

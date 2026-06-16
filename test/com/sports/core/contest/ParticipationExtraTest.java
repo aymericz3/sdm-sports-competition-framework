@@ -1,8 +1,8 @@
 package com.sports.core.contest;
 
 import com.sports.core.entity.Participant;
-import com.sports.core.strategy.OutcomeRule;
-import com.sports.core.strategy.TerminationRule;
+import com.sports.modules.football.EventDerived;
+import com.sports.modules.football.TimeLimit;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -23,35 +23,32 @@ public class ParticipationExtraTest {
     }
 
     @Test
-    void addChildLinksNestedContest() {
+    void participationKnowsItsContest() {
+        Participant a = Participant.individual("A");
+        Participant b = Participant.individual("B");
 
-        Participant p1 = Participant.individual("A");
-        Participant p2 = Participant.individual("B");
+        Participation pa = new Participation(a, "HOME");
+        Participation pb = new Participation(b, "AWAY");
 
-        Participation pa = new Participation(p1, null);
-        Participation pb = new Participation(p2, null);
+        Contest contest = new Contest(List.of(pa, pb), new TimeLimit(90), new EventDerived());
 
-        TerminationRule tRule = contest -> TerminationKind.NOT_OVER;
-        OutcomeRule oRule = contest -> null;
+        assertSame(contest, pa.getContest());
+        assertSame(contest, pb.getContest());
+    }
 
-        Contest parent = new Contest(
-                List.of(pa, pb),
-                tRule,
-                oRule
+    @Test
+    void participationCannotBelongToTwoContests() {
+        Participant a = Participant.individual("A");
+        Participant b = Participant.individual("B");
+
+        Participation pa = new Participation(a, "HOME");
+        Participation pb = new Participation(b, "AWAY");
+
+        new Contest(List.of(pa, pb), new TimeLimit(90), new EventDerived());
+
+        assertThrows(
+                IllegalStateException.class,
+                () -> new Contest(List.of(pa, pb), new TimeLimit(90), new EventDerived())
         );
-
-        Contest child = new Contest(
-                List.of(
-                        new Participation(p1, null),
-                        new Participation(p2, null)
-                ),
-                tRule,
-                oRule
-        );
-
-        parent.addChild(child);
-
-        assertEquals(1, parent.getChildren().size());
-        assertSame(child, parent.getChildren().get(0));
     }
 }

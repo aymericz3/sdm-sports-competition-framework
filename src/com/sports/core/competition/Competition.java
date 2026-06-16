@@ -6,7 +6,7 @@ import com.sports.core.entity.Sport;
 import com.sports.core.strategy.*;
 import java.util.*;
 
-public class Competition {
+public class Competition implements Standings {
     private final String id;
     private final String name;
     private final Sport sport;
@@ -59,10 +59,27 @@ public class Competition {
                     cachedORule
             ));
         }
+
+        validateRoles(contests);
+    }
+
+    /** Enforces the report's invariant: every participation's role comes from the sport's allowed set. */
+    private void validateRoles(List<Contest> toCheck) {
+        if (sport == null) {
+            return;
+        }
+        for (Contest contest : toCheck) {
+            for (var participation : contest.getParticipations()) {
+                if (!sport.isAllowedRole(participation.getRole())) {
+                    throw new IllegalArgumentException(
+                            "Role '" + participation.getRole() + "' is not allowed in " + sport.getName());
+                }
+            }
+        }
     }
 
     public String getId()                       { return id; }
-    public String getName()                     { return name; }
+    @Override public String getName()           { return name; }
     public Sport getSport()                     { return sport; }
     public List<Participant> getEntrants()      { return Collections.unmodifiableList(entrants); }
     public List<Contest> getContests()          { return Collections.unmodifiableList(contests); }
@@ -80,6 +97,7 @@ public class Competition {
         return decided;
     }
 
+    @Override
     public Leaderboard computeStandings() {
         return standingsAggregator.compute(
                 getDecidedContests(),

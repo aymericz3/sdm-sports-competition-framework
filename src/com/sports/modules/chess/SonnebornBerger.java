@@ -16,11 +16,13 @@ public class SonnebornBerger implements Tiebreak {
 
     @Override
     public List<Participant> resolve(List<Participant> tied, List<Contest> decidedContests) {
+        // Total score of EVERY participant: a tied player's Sonneborn-Berger sums
+        // the totals of the opponents it beat (plus half of those it drew), and
+        // those opponents are normally outside the tied group.
         Map<Participant, Double> totalScores = new LinkedHashMap<>();
         Map<Participant, Double> sbScores = new LinkedHashMap<>();
 
         for (Participant participant : tied) {
-            totalScores.put(participant, 0.0);
             sbScores.put(participant, 0.0);
         }
 
@@ -31,14 +33,11 @@ public class SonnebornBerger implements Tiebreak {
 
             for (Participation participation : contest.getParticipations()) {
                 Participant participant = participation.getParticipant();
-
-                if (totalScores.containsKey(participant)) {
-                    totalScores.put(
-                        participant,
-                        totalScores.get(participant)
-                            + scoringRule.points(contest.getResult().getContribution(participation))
-                    );
-                }
+                totalScores.merge(
+                    participant,
+                    scoringRule.points(contest.getResult().getContribution(participation)),
+                    Double::sum
+                );
             }
         }
 

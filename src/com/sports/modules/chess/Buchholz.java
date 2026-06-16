@@ -19,11 +19,13 @@ public class Buchholz implements Tiebreak {
     @Override
     public List<Participant> resolve(List<Participant> tied, List<Contest> decidedContests) {
 
+        // Total score of EVERY participant (not just the tied ones): a tied
+        // player's Buchholz is the sum of the totals of the opponents it faced,
+        // and those opponents are normally outside the tied group.
         Map<Participant, Double> totalScores = new LinkedHashMap<>();
         Map<Participant, Double> buchholz = new LinkedHashMap<>();
 
         for (Participant participant : tied) {
-            totalScores.put(participant, 0.0);
             buchholz.put(participant, 0.0);
         }
 
@@ -34,16 +36,11 @@ public class Buchholz implements Tiebreak {
 
             for (Participation participation : contest.getParticipations()) {
                 Participant participant = participation.getParticipant();
-
-                if (totalScores.containsKey(participant)) {
-                    totalScores.put(
-                        participant,
-                        totalScores.get(participant)
-                            + scoringRule.points(
-                                contest.getResult().getContribution(participation)
-                            )
-                    );
-                }
+                totalScores.merge(
+                    participant,
+                    scoringRule.points(contest.getResult().getContribution(participation)),
+                    Double::sum
+                );
             }
         }
 

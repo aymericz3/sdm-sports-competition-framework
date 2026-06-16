@@ -14,7 +14,8 @@ public class FootballModule {
         "Football",
         Arrays.asList("HOME", "AWAY"),
         true,
-        true
+        () -> new TimeLimit(90),
+        EventDerived::new
     );
 
     public static Competition league(String name, List<Participant> entrants) {
@@ -30,8 +31,8 @@ public class FootballModule {
                     new HeadToHead(null)
                 )
             ),
-            new TimeLimit(90),
-            new EventDerived()
+            SPORT.newTermination(),
+            SPORT.newOutcome()
         );
     }
 }
