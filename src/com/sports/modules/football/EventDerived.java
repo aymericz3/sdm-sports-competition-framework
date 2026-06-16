@@ -8,6 +8,27 @@ public class EventDerived implements OutcomeRule {
 
     @Override
     public Result buildResult(Contest contest) {
+        Participation dnf = null;
+        for (Participation participation : contest.getParticipations()) {
+            if (participation.getStatus() == ParticipationStatus.DID_NOT_FINISH
+                || participation.getStatus() == ParticipationStatus.DID_NOT_START) {
+                dnf = participation;
+            }
+        }
+        if (dnf != null) {
+            Participation other = null;
+            for (Participation participation : contest.getParticipations()) {
+                if (participation != dnf) other = participation;
+            }
+            Map<Participation, StandingContribution> contributions = new LinkedHashMap<>();
+            contributions.put(other, StandingContribution.won());
+            contributions.put(dnf, StandingContribution.lost());
+            if (other.getStatus() == ParticipationStatus.ACTIVE) {
+                other.complete("won");
+            }
+            return new SimpleResult(List.of(other, dnf), contributions);
+        }
+
         Map<Participation, Integer> goals = new LinkedHashMap<>();
 
         for (Participation participation : contest.getParticipations()) {
@@ -26,7 +47,9 @@ public class EventDerived implements OutcomeRule {
         }
 
         for (Participation participation : contest.getParticipations()) {
-            participation.complete(String.valueOf(goals.get(participation)));
+            if (participation.getStatus() == ParticipationStatus.ACTIVE) {
+                participation.complete(String.valueOf(goals.get(participation)));
+            }
         }
 
         List<Participation> ranked = new ArrayList<>(contest.getParticipations());

@@ -172,13 +172,13 @@ public class Contest {
         terminationKind = kind;
         state = ContestState.FINISHED;
 
+        result = outcomeRule.buildResult(this);
+
         for (Participation participation : participations) {
             if (participation.getStatus() == ParticipationStatus.ACTIVE) {
                 participation.complete(null);
             }
         }
-
-        result = outcomeRule.buildResult(this);
     }
 
     private static void require(boolean condition, String message) {
