@@ -3,7 +3,6 @@ package com.sports.modules.common;
 import com.sports.core.contest.StandingContribution;
 import com.sports.core.strategy.ScoringRule;
 
-/** Converts a "won"/"drew"/"lost" token into points. Used by football (3,1,0) and chess (1,0.5,0). */
 public class WinDrawLoss implements ScoringRule {
     private final double winPoints;
     private final double drawPoints;
@@ -17,6 +16,24 @@ public class WinDrawLoss implements ScoringRule {
 
     @Override
     public double points(StandingContribution contribution) {
-        throw new UnsupportedOperationException("TODO");
+        if (contribution == null) {
+            return 0;
+        }
+
+        String token = contribution.getToken();
+
+        if ("won".equals(token)) {
+            return winPoints;
+        }
+
+        if ("drew".equals(token)) {
+            return drawPoints;
+        }
+
+        if ("lost".equals(token)) {
+            return lossPoints;
+        }
+
+        return 0;
     }
 }
