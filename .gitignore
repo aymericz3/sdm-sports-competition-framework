@@ -1,4 +1,5 @@
-out/
-sources.txt
-*.class
+# Office temp/lock files
+~$*
+
+# macOS
 .DS_Store
